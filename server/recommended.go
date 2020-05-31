@@ -19,6 +19,7 @@ package server
 import (
 	"github.com/appscode/guard/auth/providers"
 	"github.com/appscode/guard/auth/providers/azure"
+	"github.com/appscode/guard/auth/providers/firebase"
 	"github.com/appscode/guard/auth/providers/github"
 	"github.com/appscode/guard/auth/providers/gitlab"
 	"github.com/appscode/guard/auth/providers/google"
@@ -37,6 +38,7 @@ type RecommendedOptions struct {
 	Google        google.Options
 	Azure         azure.Options
 	LDAP          ldap.Options
+	Firebase      firebase.Options
 	AuthProvider  providers.AuthProviders
 }
 
@@ -50,6 +52,7 @@ func NewRecommendedOptions() *RecommendedOptions {
 		Token:         token.NewOptions(),
 		Google:        google.NewOptions(),
 		LDAP:          ldap.NewOptions(),
+		Firebase:      firebase.NewOptions(),
 	}
 }
 
@@ -63,6 +66,7 @@ func (o *RecommendedOptions) AddFlags(fs *pflag.FlagSet) {
 	o.Google.AddFlags(fs)
 	o.Azure.AddFlags(fs)
 	o.LDAP.AddFlags(fs)
+	o.Firebase.AddFlags(fs)
 }
 
 func (o *RecommendedOptions) Validate() []error {
@@ -88,6 +92,9 @@ func (o *RecommendedOptions) Validate() []error {
 	}
 	if o.AuthProvider.Has(ldap.OrgType) {
 		errs = append(errs, o.LDAP.Validate()...)
+	}
+	if o.AuthProvider.Has(firebase.OrgType) {
+		errs = append(errs, o.Firebase.Validate()...)
 	}
 
 	return errs
